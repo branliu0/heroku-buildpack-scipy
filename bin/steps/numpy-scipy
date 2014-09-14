@@ -10,7 +10,7 @@
 # This script is invoked by [`bin/compile`](/).
 
 VENDORED_GIT_NAME="npscipy-binaries"
-VENDORED_GIT_REPO="git://github.com/thenovices/${VENDORED_GIT_NAME}.git"
+VENDORED_GIT_REPO="git://github.com/tianyupu/${VENDORED_GIT_NAME}.git"
 # The location of the pre-compiled atlas/lapack/blas/gfortran binaries.
 VENDORED_BINARIES="npscipy"
 VENDORED_NUMPY_VERSION="1.8.1"
@@ -18,6 +18,7 @@ VENDORED_NUMPY="numpy-1.8.1"
 VENDORED_SCIPY_VERSION="0.14.0"
 VENDORED_SCIPY="scipy-0.14.0"
 REQ_TXT=$(pwd)/requirements.txt
+MAIN_PYTHON_VERSION=$(echo $PYTHON_VERSION | cut -d- -f2 | cut -d. -f-2) # eg 2.7 or 3.4
 
 # Syntax sugar.
 source $BIN_DIR/utils
@@ -39,25 +40,25 @@ if (grep -iq -e "numpy" -e "scipy" $REQ_TXT) then
   export BLAS=$(pwd)/vendor/lib/atlas-base/atlas/libblas.a
   export LAPACK=$(pwd)/vendor/lib/atlas-base/atlas/liblapack.a
   export ATLAS=$(pwd)/vendor/lib/atlas-base/libatlas.a
-  export LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
-  export LD_LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
+  export LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas:$LIBRARY_PATH
+  export LD_LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas:$LD_LIBRARY_PATH
 
   if (grep -iq "numpy" $REQ_TXT) then
     NUMPY_VERSION=$(grep -i "numpy" $REQ_TXT | cut -d'=' -f3)
     if [ "$NUMPY_VERSION" != "$VENDORED_NUMPY_VERSION" ]; then
       puts-step "NumPy $NUMPY_VERSION requested. This buildpack only supports NumPy $VENDORED_NUMPY_VERSION"
-    elif [ ! -d "python/lib/python2.7/site-packages/numpy" ]; then
+    elif [ ! -d "python/lib/python$MAIN_PYTHON_VERSION/site-packages/numpy" ]; then
       puts-step "Copying compiled NumPy 1.8.1."
-      tar -xzf ${VENDORED_GIT_NAME}/${VENDORED_NUMPY}.tar.gz
+      tar -xzf ${VENDORED_GIT_NAME}/${VENDORED_NUMPY}-py$MAIN_PYTHON_VERSION.tar.gz
     else
-      INSTALLED_NUMPY_VERSION=$(find python/lib/python2.7/site-packages -name "numpy-*" | cut -d'-' -f3)
+      INSTALLED_NUMPY_VERSION=$(find python/lib/python$MAIN_PYTHON_VERSION/site-packages -name "numpy-*" | cut -d'-' -f3)
       if [ "$INSTALLED_NUMPY_VERSION" == "$VENDORED_NUMPY_VERSION" ]; then
         puts-step "Existing NumPy ($INSTALLED_NUMPY_VERSION) package detected."
       else
         puts-step "Removing old NumPy ($INSTALLED_NUMPY_VERSION) package."
-        rm -rf python/lib/python2.7/site-packages/numpy*
+        rm -rf python/lib/python$MAIN_PYTHON_VERSION/site-packages/numpy*
         puts-step "Installing new NumPy ($VENDORED_NUMPY_VERSION) package."
-        tar xzf ${VENDORED_GIT_NAME}/${VENDORED_NUMPY}.tar.gz
+        tar xzf ${VENDORED_GIT_NAME}/${VENDORED_NUMPY}-py$MAIN_PYTHON_VERSION.tar.gz
       fi
     fi
   fi
@@ -66,18 +67,18 @@ if (grep -iq -e "numpy" -e "scipy" $REQ_TXT) then
     SCIPY_VERSION=$(grep -i "scipy" $REQ_TXT | cut -d'=' -f3)
     if [ "$SCIPY_VERSION" != "$VENDORED_SCIPY_VERSION" ]; then
       puts-step "SciPy $SCIPY_VERSION requested. This buildpack only supports SciPy $VENDORED_SCIPY_VERSION"
-    elif [ ! -d "python/lib/python2.7/site-packages/scipy" ]; then
-      puts-step "Copying compiled SciPy 1.8.1."
-      tar -xzf ${VENDORED_GIT_NAME}/${VENDORED_SCIPY}.tar.gz
+    elif [ ! -d "python/lib/python$MAIN_PYTHON_VERSION/site-packages/scipy" ]; then
+      puts-step "Copying compiled SciPy 0.14.0."
+      tar -xzf ${VENDORED_GIT_NAME}/${VENDORED_SCIPY}-$MAIN_PYTHON_VERSION.tar.gz
     else
-      INSTALLED_SCIPY_VERSION=$(find python/lib/python2.7/site-packages -name "scipy-*" | cut -d'-' -f3)
+      INSTALLED_SCIPY_VERSION=$(find python/lib/python$MAIN_PYTHON_VERSION/site-packages -name "scipy-*" | cut -d'-' -f3)
       if [ "$INSTALLED_SCIPY_VERSION" == "$VENDORED_SCIPY_VERSION" ]; then
         puts-step "Existing SciPy ($INSTALLED_SCIPY_VERSION) package detected."
       else
         puts-step "Removing old SciPy ($INSTALLED_SCIPY_VERSION) package."
-        rm -rf python/lib/python2.7/site-packages/scipy*
+        rm -rf python/lib/python$MAIN_PYTHON_VERSION/site-packages/scipy*
         puts-step "Installing new SciPy ($VENDORED_SCIPY_VERSION) package."
-        tar xzf ${VENDORED_GIT_NAME}/${VENDORED_SCIPY}.tar.gz
+        tar xzf ${VENDORED_GIT_NAME}/${VENDORED_SCIPY}-$MAIN_PYTHON_VERSION.tar.gz
       fi
     fi
   fi
