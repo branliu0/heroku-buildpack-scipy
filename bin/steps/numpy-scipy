@@ -19,7 +19,7 @@ VENDORED_SCIPY_VERSION="0.14.0"
 VENDORED_SCIPY="scipy-0.14.0"
 REQ_TXT=$(pwd)/requirements.txt
 # get recursive requirements as well 
-RECURSIVE_REQ_TXT=grep -Po "(-r\s)\K[^\s]*" requirements.txt
+RECURSIVE_REQ_TXT=$(grep -Po "(-r\s)\K[^\s]*" requirements.txt)
 
 # Syntax sugar.
 source $BIN_DIR/utils
