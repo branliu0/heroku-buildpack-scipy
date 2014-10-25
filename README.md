@@ -7,7 +7,7 @@ for Python apps, powered by [pip](http://www.pip-installer.org/).
 This custom buildpack currently supports only NumPy 1.8.1 and SciPy 0.14.0
 installations.
 
-Please open a GitHub for any problems encountered or feature requests. If you
+Please open a GitHub issue for any problems encountered or feature requests. If you
 are interested in seeing a write-up/tutorial for creating this custom
 buildpack, please let me know in a GitHub issue.
 
