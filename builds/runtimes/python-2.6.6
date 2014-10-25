@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Build Path: /app/.heroku/python/
+# Build Deps: libraries/sqlite
+
+OUT_PREFIX=$1
+
+source ./download_python
+download_python "2.6.6"
+
+# Protect 2.6 builds from parent Python (causes segfault during build).
+unset LANG PYTHONHOME PYTHONPATH
+
+cd src
+./configure --prefix=$OUT_PREFIX --enable-shared
+make
+make install
