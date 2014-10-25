@@ -18,14 +18,12 @@ VENDORED_NUMPY="numpy-1.8.1"
 VENDORED_SCIPY_VERSION="0.14.0"
 VENDORED_SCIPY="scipy-0.14.0"
 REQ_TXT=$(pwd)/requirements.txt
-# get recursive requirements as well 
-RECURSIVE_REQ_TXT=$(grep -Po "(-r\s)\K[^\s]*" requirements.txt)
 
 # Syntax sugar.
 source $BIN_DIR/utils
 
-# If numpy or scipy exists within requirements.txt then use binaries.
-if (grep -iq -e "numpy" -e "scipy" $REQ_TXT $RECURSIVE_REQ_TEXT) then
+# If numpy or scipy exists within requirements, use binaries.
+if (pip-grep -s $REQ_TXT numpy -o pip-grep -s $REQ_TXT scipy) then
   puts-step "Detected numpy/scipy in requirements.txt. Downloading prebuilt binaries."
   cd .heroku
   git clone --quiet ${VENDORED_GIT_REPO}
@@ -44,9 +42,9 @@ if (grep -iq -e "numpy" -e "scipy" $REQ_TXT $RECURSIVE_REQ_TEXT) then
   export LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
   export LD_LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
 
-  if (grep -iq "numpy" $REQ_TXT) then
+  if (pip-grep -s $REQ_TXT numpy) then
     NUMPY_VERSION=$(grep -i "numpy" $REQ_TXT | cut -d'=' -f3)
-    if [ "$NUMPY_VERSION" != "$VENDORED_NUMPY_VERSION" ]; then
+    if ! (pip-grep -s $REQ_TXT numpy==${VENDORED_NUMPY_VERSION}) ; then
       puts-step "NumPy $NUMPY_VERSION requested. This buildpack only supports NumPy $VENDORED_NUMPY_VERSION"
     elif [ ! -d "python/lib/python2.7/site-packages/numpy" ]; then
       puts-step "Copying compiled NumPy 1.8.1."
@@ -64,9 +62,9 @@ if (grep -iq -e "numpy" -e "scipy" $REQ_TXT $RECURSIVE_REQ_TEXT) then
     fi
   fi
 
-  if (grep -iq "scipy" $REQ_TXT) then
+  if (pip-grep -s $REQ_TXT scipy) then
     SCIPY_VERSION=$(grep -i "scipy" $REQ_TXT | cut -d'=' -f3)
-    if [ "$SCIPY_VERSION" != "$VENDORED_SCIPY_VERSION" ]; then
+    if ! (pip-grep -s $REQ_TXT scipy==${VENDORED_SCIPY_VERSION}) ; then
       puts-step "SciPy $SCIPY_VERSION requested. This buildpack only supports SciPy $VENDORED_SCIPY_VERSION"
     elif [ ! -d "python/lib/python2.7/site-packages/scipy" ]; then
       puts-step "Copying compiled SciPy 1.8.1."
