@@ -18,12 +18,14 @@ VENDORED_NUMPY="numpy-1.8.1"
 VENDORED_SCIPY_VERSION="0.14.0"
 VENDORED_SCIPY="scipy-0.14.0"
 REQ_TXT=$(pwd)/requirements.txt
+# get recursive requirements as well 
+RECURSIVE_REQ_TXT=grep -Po "(-r\s)\K[^\s]*" requirements.txt
 
 # Syntax sugar.
 source $BIN_DIR/utils
 
 # If numpy or scipy exists within requirements.txt then use binaries.
-if (grep -iq -e "numpy" -e "scipy" $REQ_TXT) then
+if (grep -iq -e "numpy" -e "scipy" $REQ_TXT $RECURSIVE_REQ_TEXT) then
   puts-step "Detected numpy/scipy in requirements.txt. Downloading prebuilt binaries."
   cd .heroku
   git clone --quiet ${VENDORED_GIT_REPO}
