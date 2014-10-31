@@ -36,11 +36,11 @@ if (pip-grep -s $REQ_TXT numpy) || (pip-grep -s $REQ_TXT scipy) then
     # Download and extract everything into target vendor directory.
     tar -xvf ${VENDORED_GIT_NAME}/${VENDORED_BINARIES}.tar.gz > /dev/null
   fi
-  export BLAS=$(pwd)/vendor/lib/atlas-base/atlas/libblas.a
-  export LAPACK=$(pwd)/vendor/lib/atlas-base/atlas/liblapack.a
-  export ATLAS=$(pwd)/vendor/lib/atlas-base/libatlas.a
-  export LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
-  export LD_LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
+  set-env BLAS $(pwd)/vendor/lib/atlas-base/atlas/libblas.a
+  set-env LAPACK $(pwd)/vendor/lib/atlas-base/atlas/liblapack.a
+  set-env ATLAS $(pwd)/vendor/lib/atlas-base/libatlas.a
+  set-env LIBRARY_PATH $LIBRARY_PATH:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
+  set-env LD_LIBRARY_PATH $LD_LIBRARY_PATH:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
 
   if (pip-grep -s $REQ_TXT numpy) then
     if ! (pip-grep -s $REQ_TXT numpy==${VENDORED_NUMPY_VERSION}) ; then
@@ -65,7 +65,7 @@ if (pip-grep -s $REQ_TXT numpy) || (pip-grep -s $REQ_TXT scipy) then
     if ! (pip-grep -s $REQ_TXT scipy==${VENDORED_SCIPY_VERSION}) ; then
       puts-step "This buildpack only supports SciPy $VENDORED_SCIPY_VERSION"
     elif [ ! -d "python/lib/python2.7/site-packages/scipy" ]; then
-      puts-step "Copying compiled SciPy 1.8.1."
+      puts-step "Copying compiled SciPy 0.14.0."
       tar -xzf ${VENDORED_GIT_NAME}/${VENDORED_SCIPY}.tar.gz
     else
       INSTALLED_SCIPY_VERSION=$(find python/lib/python2.7/site-packages -name "scipy-*" | cut -d'-' -f3)

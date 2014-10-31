@@ -29,7 +29,7 @@ DEFAULT_PYTHON_VERSION="python-2.7.8"
 DEFAULT_PYTHON_STACK="cedar"
 PYTHON_EXE="/app/.heroku/python/bin/python"
 PIP_VERSION="1.5.6"
-SETUPTOOLS_VERSION="5.4.1"
+SETUPTOOLS_VERSION="7.0"
 
 # Setup bpwatch
 export PATH=$PATH:$ROOT_DIR/vendor/bpwatch
@@ -162,11 +162,11 @@ source $BIN_DIR/steps/mercurial
 # Pylibmc support.
 source $BIN_DIR/steps/pylibmc
 
-# Numpy/scipy support
-source $BIN_DIR/steps/numpy-scipy
-
 # Libffi support.
 source $BIN_DIR/steps/cryptography
+
+# Numpy/scipy support
+source $BIN_DIR/steps/numpy-scipy
 
 # Install dependencies with Pip.
 source $BIN_DIR/steps/pip-install
