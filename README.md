@@ -7,7 +7,7 @@ for Python apps, powered by [pip](http://www.pip-installer.org/).
 This custom buildpack currently supports only NumPy 1.8.1 and SciPy 0.14.0
 installations.
 
-Please open a GitHub for any problems encountered or feature requests. If you
+Please open a GitHub issue for any problems encountered or feature requests. If you
 are interested in seeing a write-up/tutorial for creating this custom
 buildpack, please let me know in a GitHub issue.
 
@@ -29,11 +29,11 @@ Usage
 -----
 For a new app:
 
-    heroku create --buildpack https://github.com/thenovices/heroku-buildpack-scipy
+    heroku create --buildpack https://github.com/agilgur5/heroku-buildpack-scipy
 
 For an existing app:
 
-    heroku config:set BUILDPACK_URL=https://github.com/thenovices/heroku-buildpack-scipy
+    heroku config:set BUILDPACK_URL=https://github.com/agilgur5/heroku-buildpack-scipy
 
 Demo
 ----
@@ -41,7 +41,7 @@ Demo
     $ mkdir testheroku
     $ cd testheroku
     $ git init
-    $ heroku create --buildpack https://github.com/thenovices/heroku-buildpack-scipy
+    $ heroku create --buildpack https://github.com/agilgur5/heroku-buildpack-scipy
     $ echo -e "numpy==1.8.1\nscipy==0.14.0" > requirements.txt
     $ git add requirements.txt
     $ git commit -m 'Added requirements'
@@ -51,5 +51,5 @@ Demo
 Acknowledgments
 ---------------
 
-This fork is taken from @dbrgn -- I owe thanks to him, @wyn, and others for
+This fork is taken from @thenovices -- I owe thanks to him, @dbrgn, @wyn, and others for
 setting up a lot of the code here.

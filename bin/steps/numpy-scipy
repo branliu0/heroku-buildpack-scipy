@@ -22,8 +22,8 @@ REQ_TXT=$(pwd)/requirements.txt
 # Syntax sugar.
 source $BIN_DIR/utils
 
-# If numpy or scipy exists within requirements.txt then use binaries.
-if (grep -iq -e "numpy" -e "scipy" $REQ_TXT) then
+# If numpy or scipy exists within requirements, use binaries.
+if (pip-grep -s $REQ_TXT numpy) || (pip-grep -s $REQ_TXT scipy) then
   puts-step "Detected numpy/scipy in requirements.txt. Downloading prebuilt binaries."
   cd .heroku
   git clone --quiet ${VENDORED_GIT_REPO}
@@ -42,10 +42,9 @@ if (grep -iq -e "numpy" -e "scipy" $REQ_TXT) then
   set-env LIBRARY_PATH $LIBRARY_PATH:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
   set-env LD_LIBRARY_PATH $LD_LIBRARY_PATH:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas
 
-  if (grep -iq "numpy" $REQ_TXT) then
-    NUMPY_VERSION=$(grep -i "numpy" $REQ_TXT | cut -d'=' -f3)
-    if [ "$NUMPY_VERSION" != "$VENDORED_NUMPY_VERSION" ]; then
-      puts-step "NumPy $NUMPY_VERSION requested. This buildpack only supports NumPy $VENDORED_NUMPY_VERSION"
+  if (pip-grep -s $REQ_TXT numpy) then
+    if ! (pip-grep -s $REQ_TXT numpy==${VENDORED_NUMPY_VERSION}) ; then
+      puts-step "This buildpack only supports NumPy $VENDORED_NUMPY_VERSION"
     elif [ ! -d "python/lib/python2.7/site-packages/numpy" ]; then
       puts-step "Copying compiled NumPy 1.8.1."
       tar -xzf ${VENDORED_GIT_NAME}/${VENDORED_NUMPY}.tar.gz
@@ -62,10 +61,9 @@ if (grep -iq -e "numpy" -e "scipy" $REQ_TXT) then
     fi
   fi
 
-  if (grep -iq "scipy" $REQ_TXT) then
-    SCIPY_VERSION=$(grep -i "scipy" $REQ_TXT | cut -d'=' -f3)
-    if [ "$SCIPY_VERSION" != "$VENDORED_SCIPY_VERSION" ]; then
-      puts-step "SciPy $SCIPY_VERSION requested. This buildpack only supports SciPy $VENDORED_SCIPY_VERSION"
+  if (pip-grep -s $REQ_TXT scipy) then
+    if ! (pip-grep -s $REQ_TXT scipy==${VENDORED_SCIPY_VERSION}) ; then
+      puts-step "This buildpack only supports SciPy $VENDORED_SCIPY_VERSION"
     elif [ ! -d "python/lib/python2.7/site-packages/scipy" ]; then
       puts-step "Copying compiled SciPy 0.14.0."
       tar -xzf ${VENDORED_GIT_NAME}/${VENDORED_SCIPY}.tar.gz
