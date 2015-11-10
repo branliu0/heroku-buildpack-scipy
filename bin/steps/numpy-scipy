@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 # This script serves as the NumPy and SciPy build step of the
-# [**Python Buildpack**](https://github.com/heroku/heroku-buildpack-python) 
-# compiler. 
-# 
-# A [buildpack](http://devcenter.heroku.com/articles/buildpacks) is an 
+# [**Python Buildpack**](https://github.com/heroku/heroku-buildpack-python)
+# compiler.
+#
+# A [buildpack](http://devcenter.heroku.com/articles/buildpacks) is an
 # adapter between a Python application and Heroku's runtime.
 #
 # This script is invoked by [`bin/compile`](/).
@@ -60,6 +60,8 @@ function install_prebuilt {
     return
   fi
 
+  cd .heroku
+
   # Handle any existing installations:
   # (1) Skip installation if the correct version is already installed.
   # (2) If an existing installation of a different version exists, remove it.
@@ -82,6 +84,8 @@ function install_prebuilt {
   tar -xzf "${name}.tar.gz"
   cp -a venv/* python/
   rm -rf venv "${name}.tar.gz"
+
+  cd ..
 }
 
 REQ_TXT=$(pwd)/requirements.txt
@@ -94,8 +98,8 @@ if (pip-grep --silent $REQ_TXT numpy scipy &> /dev/null); then
 
   install_binaries
 
+  cd ..
+
   install_prebuilt "numpy" NUMPY_VERSIONS[@]
   install_prebuilt "scipy" SCIPY_VERSIONS[@]
-
-  cd ..
 fi
